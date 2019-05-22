@@ -30,23 +30,19 @@ for line in lines:
     line = line.strip()
     bits = line.split(' ')
     filename = bits[0]
-    if bits[1] == "ERROR!":
-        print("Skipping file", filename, "due to upload error")
-    else:
-        size = int(bits[1])
-        print("Registering file", filename, "with size", size)
-        lfn = LFNBASE + filename
-        
-        infoDict = {}
-        infoDict['PFN'] = PFNBASE + filename
-        infoDict['Size'] = size
-        infoDict['SE'] = SE
-        infoDict['Checksum'] = ''
-        infoDict['GUID'] = str(uuid.uuid4())
+    size = int(bits[1])
+    print("Registering file", filename, "with size", size)
+    lfn = LFNBASE + filename
 
-        fileDict = {}
-        fileDict[lfn] = infoDict
-        
-        result = fc.addFile(fileDict)
-        print("Result:", result)
-        
+    infoDict = {}
+    infoDict['PFN'] = PFNBASE + filename
+    infoDict['Size'] = size
+    infoDict['SE'] = SE
+    infoDict['Checksum'] = ''
+    infoDict['GUID'] = str(uuid.uuid4())
+
+    fileDict = {}
+    fileDict[lfn] = infoDict
+
+    result = fc.addFile(fileDict)
+    print("Result:", result)
