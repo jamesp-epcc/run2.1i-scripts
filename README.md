@@ -36,3 +36,13 @@ jobmanager.py maintains its state in a set of text files. The paths to these fil
 When the script is interrupted by CTRL-C, it will catch the signal and ensure that its current state is written to disk before terminating.
 
 This script does not need to be running all the time. The jobs already submitted will progress fine without it, but no new jobs will be submitted until the script is run again.
+
+
+To get up and running with this script, you need to:
+
+ 1. Edit the file paths within to point to the right directories.
+ 2. Create joblist.txt, jobscompleted.txt and jobsites.txt as empty files.
+ 3. Create visitlist.txt containing a list of all visit numbers to be processed.
+ 4. Create visitposition.txt containing the number 0.
+ 5. Obtain a copy of lsst_sensor_list.txt.
+ 6. Run the script!
