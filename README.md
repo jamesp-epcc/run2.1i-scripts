@@ -1,8 +1,8 @@
 These are the scripts used to run ImSim for DC2 Run 2.1i on the UK grid.
 
-runimsim2.1.sh is the script actually launched on the worker node when an ImSim job starts up. It unpacks the input instance catalogue file (which will have been automatically fetched from a storage element by this point) and runs ImSim with the correct arguments, then at the end of the job it packs up the generated FITS files into an archive named fits.tar ready for upload to a storage element.
+runimsim2.1.sh is the script actually launched on the worker node when an ImSim job starts up. It unpacks the input instance catalogue file (which will have been automatically fetched from a storage element by this point) and runs ImSim with the correct arguments, then at the end of the job it packs up the generated FITS files into an archive named fits_<visit>_<index>.tar ready for upload to a storage element. It is also responsible for fetching, unpacking and setting up ImSim from a tar archive on a storage element, for compute nodes that do not have the required CVMFS repository mounted.
 
-This script takes 4 arguments:
+This script takes 5 arguments:
 
  1. The visit number. This is an 8 digit number and can be used to derive the name of the instance catalogue archive file.
 
@@ -11,6 +11,8 @@ This script takes 4 arguments:
  3. A list of the sensors that should be simulated by this job, separated by '^'. This argument must be quoted as the sensor names contain spaces.
 
  4. The number of processes that ImSim should use. This is currently always set to 4 for these jobs.
+
+ 5. The index of this job within the visit (in the range 0-51).
 
 Sometimes, if the instance catalogue does not contain any objects to be drawn onto any of the sensors, a job will produce no output. In this case the script creates a dummy output file. This is necessary because the grid middleware will generate an error if the output file does not exist, and this is not an error condition.
 

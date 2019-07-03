@@ -11,15 +11,15 @@ import signal, os, time
 
 # constants
 # data file paths
-joblistfile = "/home/james/joblist.txt"
-completedlistfile = "/home/james/jobscompleted.txt"
-visitlist = "/home/james/visitlist.txt"
-visitposition = "/home/james/visitposition.txt"
-sensorfile = "/home/james/lsst_sensor_list.txt"
-sitelistfile = "/home/james/jobsites.txt"
+joblistfile = "/home/jperry/joblist.txt"
+completedlistfile = "/home/jperry/jobscompleted.txt"
+visitlist = "/home/jperry/visitlist.txt"
+visitposition = "/home/jperry/visitposition.txt"
+sensorfile = "/home/jperry/lsst_sensor_list.txt"
+sitelistfile = "/home/jperry/jobsites.txt"
 
 # how many jobs we should aim to have in the system at once
-DESIRED_JOB_COUNT = 7500
+DESIRED_JOB_COUNT = 50000
 
 
 # returns a list of tuples. each one contains:
@@ -55,10 +55,10 @@ def submitImsimJob(dirac, joblist, sensorblocks, visit, idx):
     j.setCPUTime(1209600)
 
     instcatname = visit + ".tar.gz"
-    
     insidename = 'phosim_cat_' + str(int(visit)) + '.txt'
         
-    args = visit + ' ' + insidename + ' "' + ('^'.join(sensorblocks[idx])) + '" 4'
+    args = visit + ' ' + insidename + ' "' + ('^'.join(sensorblocks[idx])) + '" 4 ' + str(idx)
+    outputname = 'fits_' + visit + '_' + str(idx) + '.tar.gz'
 
     print "Submitting ImSim job with arguments", args
     
@@ -68,7 +68,7 @@ def submitImsimJob(dirac, joblist, sensorblocks, visit, idx):
     j.setInputSandbox(["runimsim2.1.sh","LFN:/lsst/user/j/james.perry/instcats/2.1i/" + instcatname])
     j.setOutputSandbox(["std.out","std.err"])
     j.setTag(["4Processors"])
-    j.setOutputData([visit + "/fits.tar"], outputPath="", outputSE=["UKI-NORTHGRID-LANCS-HEP-disk"])
+    j.setOutputData([visit + "/" + outputname], outputPath="", outputSE=["UKI-NORTHGRID-LANCS-HEP-disk"])
     j.setPlatform("AnyPlatform")
 
     jobID = dirac.submitJob(j)
@@ -158,9 +158,13 @@ while not exitnow:
         jobidlist.append(i[2])
 
     statuslist = dirac.status(jobidlist)
-
+    if not 'Value' in statuslist:
+        print "Error getting job status from DIRAC!"
+    
     for i in joblist:
         # get status from Dirac
+        if not i[2] in statuslist['Value']:
+            status = "Missing"
         status = statuslist['Value'][i[2]]['Status']
         # if it failed, add it to the failed list
         if status == "Failed":
@@ -192,7 +196,14 @@ while not exitnow:
         removeJobFromList(joblist, i[2])
 
         # resubmit it
-        submitImsimJob(dirac, joblist, sensorblocks, i[0], i[1])
+        success = False
+        while not success:
+            try:
+                submitImsimJob(dirac, joblist, sensorblocks, i[0], i[1])
+                success = True
+            except:
+                print "Resubmission failed, trying again..."
+                pass
 
 
     # process completed list
