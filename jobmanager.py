@@ -58,7 +58,7 @@ def submitImsimJob(dirac, joblist, sensorblocks, visit, idx):
     insidename = 'phosim_cat_' + str(int(visit)) + '.txt'
         
     args = visit + ' ' + insidename + ' "' + ('^'.join(sensorblocks[idx])) + '" 4 ' + str(idx)
-    outputname = 'fits_' + visit + '_' + str(idx) + '.tar.gz'
+    outputname = 'fits_' + visit + '_' + str(idx) + '.tar'
 
     print "Submitting ImSim job with arguments", args
     
