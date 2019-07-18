@@ -35,7 +35,7 @@ if [ $result -ne 0 ] ; then
     exit $result
 else
 # package up output
-outputname=fits_${1}_${5}.tar.gz
+outputname=fits_${1}_${5}.tar
 if [ -d fits ] ; then
     tar cf $outputname fits/
 else
