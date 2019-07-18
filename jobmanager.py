@@ -65,7 +65,7 @@ def submitImsimJob(dirac, joblist, sensorblocks, visit, idx):
     j.setExecutable('runimsim2.1.sh', arguments=args)
     j.stderr="std.err"
     j.stdout="std.out"
-    j.setInputSandbox(["runimsim2.1.sh","LFN:/lsst/user/j/james.perry/instcats/2.1i/" + instcatname])
+    j.setInputSandbox(["runimsim2.1.sh","run_imsim.py","LFN:/lsst/user/j/james.perry/instcats/2.1i/" + instcatname])
     j.setOutputSandbox(["std.out","std.err"])
     j.setTag(["4Processors"])
     j.setOutputData([visit + "/" + outputname], outputPath="", outputSE=["UKI-NORTHGRID-LANCS-HEP-disk"])

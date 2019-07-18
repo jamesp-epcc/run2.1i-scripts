@@ -29,7 +29,7 @@ cd $1
 
 # actually run ImSim
 echo Running ImSim command imsim.py --processes $4 --sensors "$3" $2
-imsim.py --processes $4 --sensors "$3" $2
+python run_imsim.py --processes $4 --sensors "$3" $2
 result=$?
 if [ $result -ne 0 ] ; then
     exit $result
