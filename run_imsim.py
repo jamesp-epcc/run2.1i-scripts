@@ -31,9 +31,6 @@ parser.add_argument('--config_file', type=str, default=None,
 parser.add_argument('--log_level', type=str,
                     choices=['DEBUG', 'INFO', 'WARN', 'ERROR', 'CRITICAL'],
                     default='INFO', help='Logging level. Default: INFO')
-parser.add_argument('--psf', type=str, default='Kolmogorov',
-                    choices=['DoubleGaussian', 'Kolmogorov', 'Atmospheric'],
-                    help="PSF model to use.  Default: Kolmogorov")
 parser.add_argument('--disable_sensor_model', default=False,
                     action='store_true',
                     help='disable sensor effects')
@@ -41,8 +38,6 @@ parser.add_argument('--file_id', type=str, default=None,
                     help='ID string to use for checkpoint filenames.')
 parser.add_argument('--create_centroid_file', default=False, action="store_true",
                     help='Write centroid file(s).')
-parser.add_argument('--seed', type=int, default=267,
-                    help='integer used to seed random number generator')
 parser.add_argument('--processes', type=int, default=1,
                     help='number of processes to use in multiprocessing mode')
 parser.add_argument('--psf_file', type=str, default=None,
@@ -83,7 +78,7 @@ with warnings.catch_warnings():
         = desc.imsim.ImageSimulator(args.instcat, psf,
                                     numRows=args.numrows,
                                     config=args.config_file,
-                                    seed=args.seed,
+                                    seed=seed,
                                     outdir=args.outdir,
                                     sensor_list=sensor_list,
                                     apply_sensor_model=apply_sensor_model,
