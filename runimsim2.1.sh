@@ -28,7 +28,7 @@ fi
 cd $1
 
 # actually run ImSim
-echo Running ImSim command imsim.py --processes $4 --sensors "$3" $2
+echo Running ImSim command imsim.py --processes $4 --sensors "$3" --create_centroid_file $2
 python ../run_imsim.py --processes $4 --sensors "$3" $2
 result=$?
 if [ $result -ne 0 ] ; then
