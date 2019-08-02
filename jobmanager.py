@@ -15,7 +15,6 @@ joblistfile = "/home/jperry/joblist.txt"
 completedlistfile = "/home/jperry/jobscompleted.txt"
 visitlist = "/home/jperry/visitlist.txt"
 visitposition = "/home/jperry/visitposition.txt"
-sensorfile = "/home/jperry/lsst_sensor_list.txt"
 sitelistfile = "/home/jperry/jobsites.txt"
 
 # how many jobs we should aim to have in the system at once
@@ -49,7 +48,7 @@ def removeJobFromList(l, jobId):
             del l[i]
             return
 
-def submitImsimJob(dirac, joblist, sensorblocks, visit, idx):
+def submitImsimJob(dirac, joblist, visit, idx):
     j = Job()
     j.setName("ImSim_" + visit + "_" + str(idx));
     j.setCPUTime(1209600)
@@ -57,7 +56,12 @@ def submitImsimJob(dirac, joblist, sensorblocks, visit, idx):
     instcatname = visit + ".tar.gz"
     insidename = 'phosim_cat_' + str(int(visit)) + '.txt'
         
-    args = visit + ' ' + insidename + ' "' + ('^'.join(sensorblocks[idx])) + '" 4 ' + str(idx)
+    startsensor = idx * 4
+    numsensors = 4
+    if idx == 47:
+        numsensors = 1
+
+    args = visit + ' ' + insidename + ' ' + str(startsensor) + ' ' + str(numsensors) + ' ' + str(idx)
     outputname = 'fits_' + visit + '_' + str(idx) + '.tar'
 
     print "Submitting ImSim job with arguments", args
@@ -65,12 +69,15 @@ def submitImsimJob(dirac, joblist, sensorblocks, visit, idx):
     j.setExecutable('runimsim2.1.sh', arguments=args)
     j.stderr="std.err"
     j.stdout="std.out"
-    j.setInputSandbox(["runimsim2.1.sh","run_imsim.py","LFN:/lsst/user/j/james.perry/instcats/2.1i/" + instcatname])
+    j.setInputSandbox(["runimsim2.1.sh","run_imsim_nersc.py","LFN:/lsst/user/j/james.perry/instcats/2.1i/" + instcatname])
     j.setOutputSandbox(["std.out","std.err"])
     j.setTag(["4Processors"])
     j.setOutputData([visit + "/" + outputname], outputPath="", outputSE=["UKI-NORTHGRID-LANCS-HEP-disk"])
     j.setPlatform("AnyPlatform")
 
+    # FIXME: remove this when these sites start working again
+    j.setBannedSites(["VAC.UKI-NORTHGRID-MAN-HEP.uk", "LCG.IN2P3-CC.fr"])
+    
     jobID = dirac.submitJob(j)
 
     # add to the list
@@ -81,10 +88,10 @@ def submitImsimJob(dirac, joblist, sensorblocks, visit, idx):
     return ok
 
 # submit a whole batch of jobs for a complete visit
-def submitBatch(dirac, joblist, sensorblocks, visit):
+def submitBatch(dirac, joblist, visit):
     print "*** Submitting jobs for", visit, "***"
-    for i in range(0, len(sensorblocks)):
-        submitImsimJob(dirac, joblist, sensorblocks, visit, i)
+    for i in range(0, 48):
+        submitImsimJob(dirac, joblist, visit, i)
 
 
 exitnow = False
@@ -101,27 +108,6 @@ dirac = Dirac()
 # read master job list
 joblist = readJobList(joblistfile)
 print "Read", len(joblist), "jobs from job list"
-
-# read sensor name list
-sensorfile = open(sensorfile, 'r')
-sensorlines = sensorfile.readlines()
-sensorfile.close()
-print "Read", len(sensorlines), "sensors from sensor list"
-
-# turn it into blocks
-sensorblocks = []
-i = 0
-while i < len(sensorlines):
-    block = []
-    n = len(sensorlines) - i
-    if n > 4:
-        n = 4
-    for j in range(0, n):
-        line = sensorlines[i + j].strip()
-        block.append(line)
-    sensorblocks.append(block)
-    i = i + n
-print "Read sensorblocks:", sensorblocks
 
 # read visits file
 visitsfile = open(visitlist, 'r')
@@ -199,7 +185,7 @@ while not exitnow:
         success = False
         while not success:
             try:
-                submitImsimJob(dirac, joblist, sensorblocks, i[0], i[1])
+                submitImsimJob(dirac, joblist, i[0], i[1])
                 success = True
             except:
                 print "Resubmission failed, trying again..."
@@ -229,7 +215,7 @@ while not exitnow:
     # start new jobs if desired
     if len(joblist) < DESIRED_JOB_COUNT and visitpos < len(visits):
         # start next batch
-        submitBatch(dirac, joblist, sensorblocks, visits[visitpos]);
+        submitBatch(dirac, joblist, visits[visitpos]);
         visitpos = visitpos + 1
 
         # save visit position

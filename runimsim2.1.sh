@@ -2,7 +2,7 @@
 # Arguments:
 #  - visit number (always full 8 digits)
 #  - name of actual top level catalogue file within archive
-#  - list of sensor names to run (quoted, and separated by ^)
+#  - index of first sensor to run (0-188)
 #  - number of processes to run
 #  - index number of job within visit
 
@@ -28,8 +28,8 @@ fi
 cd $1
 
 # actually run ImSim
-echo Running ImSim command imsim.py --processes $4 --sensors "$3" --create_centroid_file $2
-python ../run_imsim.py --processes $4 --sensors "$3" $2
+echo Running ImSim command ../run_imsim_nersc.py --processes $4 --subset_index $3 --subset_size $4 --instcat $2 --outdir fits
+python ../run_imsim_nersc.py --processes $4 --subset_index $3 --subset_size $4 --instcat $2 --outdir fits
 result=$?
 if [ $result -ne 0 ] ; then
     exit $result
