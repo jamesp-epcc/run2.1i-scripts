@@ -48,4 +48,7 @@ To get up and running with this script, you need to:
  5. Run the script!
 
 
+If you ever need to cancel all of the current jobs and resubmit them (for example because a setting needs to be changed), you can cancel them using the cancel_jobs.py script. Then rename joblist.txt to resubmissions.txt and replace joblist.txt with an empty file before running jobmanager.py. It will resubmit all the jobs in resubmissions.txt. Make sure you remove this file before running jobmanager.py again or the jobs will be resubmitted a second time!
+
+
 submit_visit.py can be used to submit a single visit, or a subset of a visit, to the grid for processing. Its first argument is the 8 digit visit number to submit. If any further arguments are present, they represent indices in the range 0-47, for jobs within the visit that should be submitted. If no further arguments are given, all 48 jobs are submitted. The job IDs are recorded in a file named 'visit_jobs_<visit>.txt'. This script does not integrate with the infrastructure used by jobmanager.py; instead, jobs submitted this way must be checked on manually.

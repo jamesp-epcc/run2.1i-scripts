@@ -16,6 +16,7 @@ completedlistfile = "/home/jperry/jobscompleted.txt"
 visitlist = "/home/jperry/visitlist.txt"
 visitposition = "/home/jperry/visitposition.txt"
 sitelistfile = "/home/jperry/jobsites.txt"
+resubmissionsfile = "/home/jperry/resubmissions.txt"
 
 # how many jobs we should aim to have in the system at once
 DESIRED_JOB_COUNT = 50000
@@ -76,7 +77,8 @@ def submitImsimJob(dirac, joblist, visit, idx):
     j.setPlatform("AnyPlatform")
 
     # FIXME: remove this when these sites start working again
-    j.setBannedSites(["VAC.UKI-NORTHGRID-MAN-HEP.uk", "LCG.IN2P3-CC.fr"])
+    #j.setBannedSites(["VAC.UKI-NORTHGRID-MAN-HEP.uk", "LCG.IN2P3-CC.fr"])
+    j.setDestination("LCG.RAL-LCG2.uk")
     
     jobID = dirac.submitJob(j)
 
@@ -125,6 +127,19 @@ visitposfile.close()
 # install signal handler so we don't lose data when closing
 signal.signal(signal.SIGINT, signalhandler)
 signal.signal(signal.SIGTERM, signalhandler)
+
+# run any resubmissions required
+if os.path.exists(resubmissionsfile):
+    resubmissions = readJobList(resubmissionsfile)
+    for resub in resubmissions:
+        success = False
+        while not success:
+            try:
+                submitImsimJob(dirac, joblist, resub[0], resub[1])
+                success = True
+            except:
+                print "Resubmission failed, trying again..."
+                pass
 
 # enter main loop
 while not exitnow:
