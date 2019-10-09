@@ -76,9 +76,8 @@ def submitImsimJob(dirac, joblist, visit, idx):
     j.setOutputData([visit + "/" + outputname], outputPath="", outputSE=["UKI-NORTHGRID-LANCS-HEP-disk"])
     j.setPlatform("AnyPlatform")
 
-    # FIXME: remove this when these sites start working again
     #j.setBannedSites(["VAC.UKI-NORTHGRID-MAN-HEP.uk", "LCG.IN2P3-CC.fr"])
-    j.setDestination("LCG.RAL-LCG2.uk")
+    #j.setDestination("LCG.RAL-LCG2.uk")
     
     jobID = dirac.submitJob(j)
 
