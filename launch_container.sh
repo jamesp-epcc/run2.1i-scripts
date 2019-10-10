@@ -30,3 +30,4 @@ else
         tar cf $outputname fits/
     fi
 fi
+
