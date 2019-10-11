@@ -54,10 +54,10 @@ for idx in indices:
     j.stderr="std.err"
     j.stdout="std.out"
     #!!! May need the 2.1i directory here depending on visit number !!!
-    j.setInputSandbox(["launch_container.sh","docker_run.sh","run_imsim_nersc.py","LFN:/lsst/user/j/james.perry/instcats/2.1i/" + instcatname])
+    j.setInputSandbox(["launch_container.sh","docker_run.sh","run_imsim_nersc.py","LFN:/lsst/user/j/james.perry/instcats/2.2i_test/" + instcatname])
     j.setOutputSandbox(["std.out","std.err"])
     j.setTag(["4Processors"])
-    j.setOutputData([visit + "/" + outputname], outputPath="", outputSE=["UKI-NORTHGRID-LANCS-HEP-disk"])
+    j.setOutputData([outputname], outputPath="", outputSE=["UKI-NORTHGRID-LANCS-HEP-disk"])
     j.setPlatform("AnyPlatform")
 
     # FIXME: remove these once those sites are working again
