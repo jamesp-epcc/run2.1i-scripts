@@ -73,3 +73,18 @@ This failure is intermittent and the same job should complete successfully next 
 
 
 Sometimes jobs run out of memory, since the instance catalogues take varying amounts of memory to process. This can manifest itself as the job entering a "stalled" state within Dirac. There is usually no error message. Sometimes the same job will work fine on the second attempt because it gets sent to a worker node with more memory available. It's also possible to change the number of processors allocated and the number of sensors processed by a single job to reduce the memory pressure (for example, allocating 4 or 8 processors but only running 1 or 2 sensors). This currently has to be done by modifying the Python code that submits the jobs.
+
+
+Containerisation
+----------------
+Everything described above is the old method for running ImSim, based on a manual installation of ImSim and its dependencies on CVMFS. It is also possible to run it in a container via Singularity.
+
+Currently, the main submission script has not been updated to support containers yet, but there is a test script that supports them. This is submit_visit_container.py. It works just the same as submit_visit.py but runs ImSim in a Singularity container.
+
+It depends on a few additional files that are used on the worker node:
+
+ - launch_container.sh is the top level script run on the worker node (instead of runimsim2.1.sh). It unpacks the input, runs the container, then packs up any generated output data.
+ - docker_run.sh is the top level script that runs inside the container. It sets up the environment for running ImSim, then changes to the right directory and invokes the ImSim driver script, which is the same as before.
+ - parsl_imsim_configs is a configuration file passed to ImSim. It is the same one used for ImSim runs at NERSC and elsewhere.
+
+The image for the container is stored in Singularity's "sandbox" format (with the files stored in a normal directory tree rather than an image file) in /cvmfs/gridpp.egi.eu/lsst/imsim_sandbox/.
